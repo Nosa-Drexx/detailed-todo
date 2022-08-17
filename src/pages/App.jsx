@@ -3,9 +3,9 @@ import id from "../id";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import TodoList from "../initialTodoList";
-import Input from "../InputTodo.jsx";
-import MakeTodo from "../MakeTodo";
-import Footer from "../Footer";
+import Input from "../Components/InputTodo.jsx";
+import MakeTodo from "../Components/MakeTodo";
+import Footer from "../Components/Footer";
 
 const NEW_TODO = "NEW_TODO";
 const DONE = "DONE";

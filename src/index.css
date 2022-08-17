@@ -263,7 +263,7 @@ footer:first-child {
 .fa-brands {
  padding: 0.3rem;
 }
-.fa-contact {
+.acontact {
   padding: 0.3rem;
 }
 .contact {
@@ -288,4 +288,31 @@ footer a {
 .rights {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   text-align: center;
+}
+.Nopage {
+  width: 100%;
+  height: 90vh;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+.NoPageLogo {
+  width: 100%;
+  height: 7vh;
+  margin: 2rem 0;
+  display: flex;
+  justify-content: center;
+}
+.NoLogo {
+  width: 300px;
+  height: 100%;
+  background-image: url("./assets/TodoLogo.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.Nopage h1, .Nopage p {
+  text-align: center;
+  color: blue;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }

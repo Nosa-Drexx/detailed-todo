@@ -13,14 +13,14 @@ function Footer() {
       <div className="contact">
         <h3>Contact</h3>
         <p>
-          <i className="fa-regular fa-location-dot fa-contact"></i>WA-11092
+          <i className="fa-regular fa-location-dot acontact"></i>WA-11092
           Nowhere, WoodCity, Canada
         </p>
         <p>
-          <i className="fa-regular fa-phone fa-contact"></i>+1-784-886-5239
+          <i className="fa-regular fa-phone acontact"></i>+1-784-886-5239
         </p>
         <p>
-          <i className="fa-regular fa-envelope fa-contact"></i>
+          <i className="fa-regular fa-envelope acontact"></i>
           <a href="mailto:nosaegharevba01@gmail.com">nosaegharevba01@gmail</a>
         </p>
       </div>

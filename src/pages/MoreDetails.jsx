@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import TodoList from "../initialTodoList";
 import { motion } from "framer-motion";
-import Footer from "../Footer";
+import Footer from "../Components/Footer";
 
 function MoreDetails() {
   const params = useParams();

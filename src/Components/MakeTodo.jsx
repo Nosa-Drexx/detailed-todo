@@ -1,4 +1,4 @@
-import id from "./id";
+import id from "../id";
 import { Link } from "react-router-dom";
 
 function MakeTodo({ todos, toggle, removeTodo }) {
