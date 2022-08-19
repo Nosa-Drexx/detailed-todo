@@ -30,13 +30,8 @@ body {
   display: flex;
   flex-flow: column wrap;
   align-items: center;
-  gap: 1rem;
+  gap: 0.4rem;
   width: 300px;
-}
-.r-a-Buttons {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
 }
 input[type="Submit"], .removeAllTodo {
   height: 40px;
@@ -46,10 +41,13 @@ input[type="Submit"], .removeAllTodo {
   color: blue;
   font-family: var(--fontFamily);
   font-size: 1.5rem;
-  width: 40%;
+  width: 100%;
   text-align: center;
   box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.6);
   border-radius: 5px;
+}
+.removeAllTodo {
+  width: 300px;
 }
 /* input[type="Submit"]:active, .removeAllTodo {
   box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.6);
@@ -73,6 +71,7 @@ input[type="Submit"]:hover {
   justify-content: center;
   align-items: center;
   width: 100%;
+  min-height: 50vh;
 }
 #todo {
   padding: 0.4rem;
@@ -234,9 +233,10 @@ background-color: white;
   color: rgb(6, 161, 6);
   font-size: 4rem;
 }
-.fa-square-xmark {
+.fa-hourglass {
   color: red;
-  font-size: 4rem;
+  font-size: 3rem;
+  padding-bottom: 5px;
 }
 footer {
   display: flex;
@@ -315,4 +315,23 @@ footer a {
   text-align: center;
   color: blue;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.reverseAction {
+  width: 100%;
+}
+.reverseAction Button {
+  width: 50%;
+  font-size: 1.5rem;
+  color: red;
+  border: 2px solid var(--color1);
+  background-color: white;
+}
+.reverseAction Button:hover {
+  color: white;
+  background-color: red;
+  border: 2px solid white;
+}
+.reverseAction Button:disabled {
+  opacity: 0.3;
+  color: green;
 }

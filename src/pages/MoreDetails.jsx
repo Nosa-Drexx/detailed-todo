@@ -7,8 +7,8 @@ function MoreDetails() {
   const params = useParams();
   const NO_EXTRA_DETAILS = "NO EXTRA DETAIL FOR THIS TODO";
   const store = localStorage.getItem("_STORAGE")
-    ? [...JSON.parse(localStorage.getItem("_STORAGE"))]
-    : TodoList;
+    ? [...JSON.parse(localStorage.getItem("_STORAGE")).present]
+    : TodoList.present;
 
   function details() {
     var txt = {
@@ -54,7 +54,7 @@ function MoreDetails() {
             {TODO.done ? (
               <i className="fa-solid fa-square-check"></i>
             ) : (
-              <i className="fa-solid fa-square-xmark"></i>
+              <i className="fa-solid fa-hourglass"></i>
             )}
           </div>
           <div className="moreDetails">

@@ -12,32 +12,86 @@ const DONE = "DONE";
 const REMOVE_TODO = "REMOVE_TODO";
 const _STORAGE = "_STORAGE";
 const REMOVE_ALL_TODO = "REMOVE_ALL_TODO";
+const UNDO = "UNDO";
+const REDO = "REDO";
 
 function reducer(state, action) {
   switch (action.type) {
     case NEW_TODO:
-      localStorage.setItem(
-        _STORAGE,
-        JSON.stringify([action.payload, ...state])
-      );
-      return [action.payload, ...state];
+      const newPresent = [action.payload, ...state.present];
+      const tempAdd = {
+        future: [],
+        past: [newPresent, ...state.past],
+        present: newPresent,
+      };
+      localStorage.setItem(_STORAGE, JSON.stringify(tempAdd));
+      return tempAdd;
+
     case DONE:
-      var newState = state.map((todo) => {
+      var newState = state.present.map((todo) => {
         if (todo.id !== action.payload.id) return todo;
         return { ...todo, done: !todo.done };
       });
-      localStorage.setItem(_STORAGE, JSON.stringify(newState));
-      return newState;
+      localStorage.setItem(
+        _STORAGE,
+        JSON.stringify({
+          future: [],
+          past: [newState, ...state.past],
+          present: newState,
+        })
+      );
+      return {
+        future: [],
+        past: [newState, ...state.past],
+        present: newState,
+      };
+
     case REMOVE_TODO:
-      var temp = [...state];
+      var temp = [...state.present];
       for (let i = 0; i < temp.length; i++) {
         if (temp[i].id === action.payload.id) temp.splice(i, 1);
       }
-      localStorage.setItem(_STORAGE, JSON.stringify(temp));
-      return temp;
+      localStorage.setItem(
+        _STORAGE,
+        JSON.stringify({
+          future: [],
+          past: [temp, ...state.past],
+          present: temp,
+        })
+      );
+      return { future: [], past: [temp, ...state.past], present: temp };
+
     case REMOVE_ALL_TODO:
-      localStorage.setItem(_STORAGE, JSON.stringify([]));
-      return [];
+      localStorage.setItem(
+        _STORAGE,
+        JSON.stringify({
+          future: [],
+          past: [[], ...state.past],
+          present: [],
+        })
+      );
+      return { future: [], past: [[], ...state.past], present: [] };
+
+    case UNDO:
+      const [firstUndo, ...restUndo] = state.past;
+      const undoAction = {
+        past: [...restUndo],
+        present: [...restUndo[0]],
+        future: [firstUndo, ...state.future],
+      };
+      localStorage.setItem(_STORAGE, JSON.stringify(undoAction));
+      return undoAction;
+
+    case REDO:
+      const [firstRedo, ...restRedo] = state.future;
+      const redoAction = {
+        past: [firstRedo, ...state.past],
+        present: [...firstRedo],
+        future: [...restRedo],
+      };
+      localStorage.setItem(_STORAGE, JSON.stringify(redoAction));
+      return redoAction;
+
     default:
       return state;
   }
@@ -57,9 +111,12 @@ function check(addedTodo, newTodo) {
 
 function App() {
   const inputTodos = localStorage.getItem("_STORAGE")
-    ? [...JSON.parse(localStorage.getItem("_STORAGE"))]
+    ? { ...JSON.parse(localStorage.getItem("_STORAGE")) }
     : TodoList;
-  const [newTodo, dispatch] = useReducer(reducer, inputTodos);
+  const [AllTodo, dispatch] = useReducer(reducer, inputTodos);
+  const newTodo = [...AllTodo.present];
+  const undoTrue = inputTodos.past.length === 1 ? false : true;
+  const redoTrue = !!inputTodos.future.length;
 
   function addTodoList(addedTodo) {
     dispatch({
@@ -90,11 +147,18 @@ function App() {
     });
   }
   function removeAllTodo() {
-    dispatch({
-      type: REMOVE_ALL_TODO,
-    });
+    if (!!newTodo.length) {
+      dispatch({
+        type: REMOVE_ALL_TODO,
+      });
+    }
   }
-
+  function undoTodoAction() {
+    dispatch({ type: UNDO });
+  }
+  function redoTodoAction() {
+    dispatch({ type: REDO });
+  }
   return (
     <motion.div
       initial={{ width: 0 }}
@@ -107,6 +171,17 @@ function App() {
           <div />
         </Link>
         <Input addTodoList={addTodoList} removeAllTodo={removeAllTodo} />
+        <button className="removeAllTodo" onClick={removeAllTodo}>
+          Remove All Todos
+        </button>
+        <div className="reverseAction">
+          <button disabled={!undoTrue} onClick={undoTodoAction}>
+            Undo{" "}
+          </button>
+          <button disabled={!redoTrue} onClick={redoTodoAction}>
+            Redo{" "}
+          </button>
+        </div>
       </section>
       <section className="todoContainer">
         <div className="Todos">

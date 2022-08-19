@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Input({ addTodoList, removeAllTodo }) {
+function Input({ addTodoList }) {
   const [addedTodo, setAddedTodo] = useState({
     todo: "",
     details: "",
@@ -41,12 +41,7 @@ function Input({ addTodoList, removeAllTodo }) {
           onChange={(event) => manageTodo(event)}
         />
       </label>
-      <div className="r-a-Buttons">
-        <input type="Submit" value="Add" />
-        <button className="removeAllTodo" onClick={removeAllTodo}>
-          Remove All Todos
-        </button>
-      </div>
+      <input type="Submit" value="Add" onChange={() => {}} />
     </form>
   );
 }
