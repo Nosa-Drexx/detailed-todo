@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import id from "../id";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -24,6 +24,8 @@ function reducer(state, action) {
         past: [newPresent, ...state.past],
         present: newPresent,
       };
+      undoTrue = tempAdd.past.length === 1 ? false : true;
+      redoTrue = !!tempAdd.future.length;
       localStorage.setItem(_STORAGE, JSON.stringify(tempAdd));
       return tempAdd;
 
@@ -32,45 +34,41 @@ function reducer(state, action) {
         if (todo.id !== action.payload.id) return todo;
         return { ...todo, done: !todo.done };
       });
-      localStorage.setItem(
-        _STORAGE,
-        JSON.stringify({
-          future: [],
-          past: [newState, ...state.past],
-          present: newState,
-        })
-      );
-      return {
+      const tempDone = {
         future: [],
         past: [newState, ...state.past],
         present: newState,
       };
+      undoTrue = tempDone.past.length === 1 ? false : true;
+      redoTrue = !!tempDone.future.length;
+      localStorage.setItem(_STORAGE, JSON.stringify(tempDone));
+      return tempDone;
 
     case REMOVE_TODO:
       var temp = [...state.present];
       for (let i = 0; i < temp.length; i++) {
         if (temp[i].id === action.payload.id) temp.splice(i, 1);
       }
-      localStorage.setItem(
-        _STORAGE,
-        JSON.stringify({
-          future: [],
-          past: [temp, ...state.past],
-          present: temp,
-        })
-      );
-      return { future: [], past: [temp, ...state.past], present: temp };
+      const tempRemovetodo = {
+        future: [],
+        past: [temp, ...state.past],
+        present: temp,
+      };
+      undoTrue = tempRemovetodo.past.length === 1 ? false : true;
+      redoTrue = !!tempRemovetodo.future.length;
+      localStorage.setItem(_STORAGE, JSON.stringify(tempRemovetodo));
+      return tempRemovetodo;
 
     case REMOVE_ALL_TODO:
-      localStorage.setItem(
-        _STORAGE,
-        JSON.stringify({
-          future: [],
-          past: [[], ...state.past],
-          present: [],
-        })
-      );
-      return { future: [], past: [[], ...state.past], present: [] };
+      const tempRemoveall = {
+        future: [],
+        past: [[], ...state.past],
+        present: [],
+      };
+      undoTrue = tempRemoveall.past.length === 1 ? false : true;
+      redoTrue = !!tempRemoveall.future.length;
+      localStorage.setItem(_STORAGE, JSON.stringify(tempRemoveall));
+      return tempRemoveall;
 
     case UNDO:
       const [firstUndo, ...restUndo] = state.past;
@@ -79,6 +77,8 @@ function reducer(state, action) {
         present: [...restUndo[0]],
         future: [firstUndo, ...state.future],
       };
+      undoTrue = undoAction.past.length === 1 ? false : true;
+      redoTrue = !!undoAction.future.length;
       localStorage.setItem(_STORAGE, JSON.stringify(undoAction));
       return undoAction;
 
@@ -89,6 +89,8 @@ function reducer(state, action) {
         present: [...firstRedo],
         future: [...restRedo],
       };
+      undoTrue = redoAction.past.length === 1 ? false : true;
+      redoTrue = !!redoAction.future.length;
       localStorage.setItem(_STORAGE, JSON.stringify(redoAction));
       return redoAction;
 
@@ -108,6 +110,8 @@ function check(addedTodo, newTodo) {
   }
   return { id: id(), done: false };
 }
+var undoTrue;
+var redoTrue;
 
 function App() {
   const inputTodos = localStorage.getItem("_STORAGE")
@@ -115,8 +119,6 @@ function App() {
     : TodoList;
   const [AllTodo, dispatch] = useReducer(reducer, inputTodos);
   const newTodo = [...AllTodo.present];
-  const undoTrue = inputTodos.past.length === 1 ? false : true;
-  const redoTrue = !!inputTodos.future.length;
 
   function addTodoList(addedTodo) {
     dispatch({
