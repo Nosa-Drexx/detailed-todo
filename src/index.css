@@ -28,10 +28,10 @@ body {
 
 .inputTodo form {
   display: flex;
-  flex-flow: column wrap;
+  flex-flow: column nowrap;
   align-items: center;
   gap: 0.4rem;
-  width: 300px;
+  width: auto;
   margin: 0;
   padding: 0;
 }
@@ -73,7 +73,7 @@ input[type="Submit"]:hover {
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-height: 50vh;
+  min-height: 70vh;
 }
 #todo {
   padding: 0.4rem;
@@ -198,6 +198,7 @@ background-color: white;
   flex-flow: column wrap;
   max-width: 1200px;
   width: 70%;
+  min-height: 80vh;
   justify-content: center;
   font-family: var(--fontFamily);
   font-size: var(--font);
