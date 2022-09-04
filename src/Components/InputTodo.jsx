@@ -1,16 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function Input({ addTodoList }) {
   const [addedTodo, setAddedTodo] = useState({
     todo: "",
     details: "",
+    date: {},
   });
+  const [dateTime, setDateTime] = useState("");
+
+  useEffect(() => {
+    setDateTime(new Date());
+  }, [addedTodo]);
 
   function manageTodo(e) {
     const key = e.target.name;
 
     setAddedTodo((prev) => {
-      return { ...prev, [key]: e.target.value };
+      return {
+        ...prev,
+        [key]: e.target.value,
+        date: {
+          currentTime: dateTime.toLocaleTimeString(),
+          currentDate: dateTime.toLocaleDateString(),
+        },
+      };
     });
   }
 
@@ -31,7 +44,7 @@ function Input({ addTodoList }) {
           onChange={(event) => manageTodo(event)}
         />
       </label>
-      <label htmlFor="details">
+      <label className="textarea" htmlFor="details">
         <textarea
           id="details"
           name="details"

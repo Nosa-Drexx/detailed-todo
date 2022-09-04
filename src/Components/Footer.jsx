@@ -17,11 +17,13 @@ function Footer() {
           Nowhere, WoodCity, Canada
         </p>
         <p>
-          <i className="fa-regular fa-phone acontact"></i>+1-784-886-5239
+          <i className="fa-regular fa-phone"></i>+1-784-886-5239
         </p>
         <p>
           <i className="fa-regular fa-envelope acontact"></i>
-          <a href="mailto:nosaegharevba01@gmail.com">nosaegharevba01@gmail</a>
+          <a href="mailto:nosaegharevba01@gmail.com">
+            nosaegharevba01@gmail.com
+          </a>
         </p>
       </div>
       <div className="rights">

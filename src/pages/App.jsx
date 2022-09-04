@@ -1,11 +1,13 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState, useRef } from "react";
 import id from "../id";
+import scrollEffect from "../animateNav";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import TodoList from "../initialTodoList";
 import Input from "../Components/InputTodo.jsx";
 import MakeTodo from "../Components/MakeTodo";
 import Footer from "../Components/Footer";
+import { animated, useTransition } from "@react-spring/web";
 
 const NEW_TODO = "NEW_TODO";
 const DONE = "DONE";
@@ -119,6 +121,17 @@ function App() {
     : TodoList;
   const [AllTodo, dispatch] = useReducer(reducer, inputTodos);
   const newTodo = [...AllTodo.present];
+  const [addNewTodo, setAddNewTodo] = useState(false);
+  const transition = useTransition(addNewTodo, {
+    from: { x: 100, y: 0, opacity: 0 },
+    enter: { x: -20, y: 0, opacity: 1 },
+    leave: { x: -100, y: 0, opacity: 0 },
+  });
+  const scrollElement = useRef();
+
+  useEffect(() => {
+    scrollEffect(scrollElement);
+  }, []);
 
   function addTodoList(addedTodo) {
     dispatch({
@@ -138,6 +151,10 @@ function App() {
         id,
       },
     });
+  }
+
+  function hideActionCenter() {
+    setAddNewTodo(!addNewTodo);
   }
 
   function removeTodo(id) {
@@ -167,15 +184,11 @@ function App() {
       animate={{ width: "100%" }}
       exit={{ x: window.innerWidth, transition: { duration: 0.1 } }}
     >
-      <section className="inputTodo">
+      <nav ref={scrollElement} className="inputTodo">
         {" "}
         <Link to="/" className="todoLists">
           <div />
         </Link>
-        <Input addTodoList={addTodoList} removeAllTodo={removeAllTodo} />
-        <button className="removeAllTodo" onClick={removeAllTodo}>
-          Remove All Todos
-        </button>
         <div className="reverseAction">
           <button disabled={!undoTrue} onClick={undoTodoAction}>
             Undo{" "}
@@ -184,7 +197,7 @@ function App() {
             Redo{" "}
           </button>
         </div>
-      </section>
+      </nav>
       <section className="todoContainer">
         <div className="Todos">
           <MakeTodo
@@ -193,6 +206,44 @@ function App() {
             removeTodo={removeTodo}
           />
         </div>
+        {addNewTodo ? (
+          <>
+            <div className="todomodal"></div>
+            {transition(
+              (style, item) =>
+                item && (
+                  <animated.div style={style} className="actioncenter">
+                    <div className="hideactioncenter-container">
+                      {" "}
+                      <button
+                        className="hideactioncenter"
+                        onClick={hideActionCenter}
+                      >
+                        X
+                      </button>
+                    </div>
+                    <Input
+                      addTodoList={addTodoList}
+                      removeAllTodo={removeAllTodo}
+                    />
+                    <button className="removeAllTodo" onClick={removeAllTodo}>
+                      Remove All Todos
+                    </button>
+                  </animated.div>
+                )
+            )}
+          </>
+        ) : (
+          <div className="createtodo">
+            <button
+              onClick={() => {
+                setAddNewTodo(!addNewTodo);
+              }}
+            >
+              +
+            </button>
+          </div>
+        )}
       </section>
       <Footer />
     </motion.div>

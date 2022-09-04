@@ -1,6 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import TodoList from "../initialTodoList";
+import scrollEffect from "../animateNav";
 import { motion } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
 import Footer from "../Components/Footer";
 
 function MoreDetails() {
@@ -9,6 +11,11 @@ function MoreDetails() {
   const store = localStorage.getItem("_STORAGE")
     ? [...JSON.parse(localStorage.getItem("_STORAGE")).present]
     : TodoList.present;
+  const scrollElement2 = useRef();
+
+  useEffect(() => {
+    scrollEffect(scrollElement2);
+  }, []);
 
   function details() {
     var txt = {
@@ -43,7 +50,7 @@ function MoreDetails() {
       exit={{ x: window.innerWidth, transition: { duration: 0.1 } }}
     >
       <section className="moreDetailsContainer">
-        <header className="todoLists head">
+        <header ref={scrollElement2} className="todoLists head">
           <Link className="Link" to="/">
             <div />
           </Link>

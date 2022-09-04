@@ -8,6 +8,16 @@ function MakeTodo({ todos, toggle, removeTodo }) {
         return (
           <article key={id()}>
             <div>
+              <div className="dateTime">
+                {todo.date ? (
+                  <>
+                    <div>{todo.date.currentTime}</div>
+                    <div>{todo.date.currentDate}</div>
+                  </>
+                ) : (
+                  " "
+                )}
+              </div>
               <div className="todoInfo">
                 <h3>{todo.todo}</h3>
                 <div className="details">
@@ -35,7 +45,7 @@ function MakeTodo({ todos, toggle, removeTodo }) {
                   className="removeThis"
                   onClick={() => removeTodo(todo.id)}
                 >
-                  <i className="fa-solid fa-circle-minus"></i>
+                  <i className="fa-solid fa-trash"></i>
                 </button>
               </div>
             </div>
