@@ -1,7 +1,7 @@
 function scrollEffect(scrollElement) {
   var scroll = window.pageYOffset;
 
-  window.addEventListener("scroll", () => {
+  window.onscroll = () => {
     const currentScroll = window.pageYOffset;
     if (scroll > currentScroll) {
       scrollElement.current.style.top = "0";
@@ -9,7 +9,7 @@ function scrollEffect(scrollElement) {
       scrollElement.current.style.top = "-300px";
     }
     scroll = currentScroll;
-  });
+  };
 }
 
 export default scrollEffect;
