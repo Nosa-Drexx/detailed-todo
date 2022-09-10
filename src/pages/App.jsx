@@ -7,99 +7,15 @@ import TodoList from "../initialTodoList";
 import Input from "../Components/InputTodo.jsx";
 import MakeTodo from "../Components/MakeTodo";
 import Footer from "../Components/Footer";
-import { animated, useTransition } from "@react-spring/web";
+import reducer from "../reducer";
+import { gsap } from "gsap";
 
 const NEW_TODO = "NEW_TODO";
 const DONE = "DONE";
 const REMOVE_TODO = "REMOVE_TODO";
-const _STORAGE = "_STORAGE";
 const REMOVE_ALL_TODO = "REMOVE_ALL_TODO";
 const UNDO = "UNDO";
 const REDO = "REDO";
-
-function reducer(state, action) {
-  switch (action.type) {
-    case NEW_TODO:
-      const newPresent = [action.payload, ...state.present];
-      const tempAdd = {
-        future: [],
-        past: [newPresent, ...state.past],
-        present: newPresent,
-      };
-      undoTrue = tempAdd.past.length === 1 ? false : true;
-      redoTrue = !!tempAdd.future.length;
-      localStorage.setItem(_STORAGE, JSON.stringify(tempAdd));
-      return tempAdd;
-
-    case DONE:
-      var newState = state.present.map((todo) => {
-        if (todo.id !== action.payload.id) return todo;
-        return { ...todo, done: !todo.done };
-      });
-      const tempDone = {
-        future: [],
-        past: [newState, ...state.past],
-        present: newState,
-      };
-      undoTrue = tempDone.past.length === 1 ? false : true;
-      redoTrue = !!tempDone.future.length;
-      localStorage.setItem(_STORAGE, JSON.stringify(tempDone));
-      return tempDone;
-
-    case REMOVE_TODO:
-      var temp = [...state.present];
-      for (let i = 0; i < temp.length; i++) {
-        if (temp[i].id === action.payload.id) temp.splice(i, 1);
-      }
-      const tempRemovetodo = {
-        future: [],
-        past: [temp, ...state.past],
-        present: temp,
-      };
-      undoTrue = tempRemovetodo.past.length === 1 ? false : true;
-      redoTrue = !!tempRemovetodo.future.length;
-      localStorage.setItem(_STORAGE, JSON.stringify(tempRemovetodo));
-      return tempRemovetodo;
-
-    case REMOVE_ALL_TODO:
-      const tempRemoveall = {
-        future: [],
-        past: [[], ...state.past],
-        present: [],
-      };
-      undoTrue = tempRemoveall.past.length === 1 ? false : true;
-      redoTrue = !!tempRemoveall.future.length;
-      localStorage.setItem(_STORAGE, JSON.stringify(tempRemoveall));
-      return tempRemoveall;
-
-    case UNDO:
-      const [firstUndo, ...restUndo] = state.past;
-      const undoAction = {
-        past: [...restUndo],
-        present: [...restUndo[0]],
-        future: [firstUndo, ...state.future],
-      };
-      undoTrue = undoAction.past.length === 1 ? false : true;
-      redoTrue = !!undoAction.future.length;
-      localStorage.setItem(_STORAGE, JSON.stringify(undoAction));
-      return undoAction;
-
-    case REDO:
-      const [firstRedo, ...restRedo] = state.future;
-      const redoAction = {
-        past: [firstRedo, ...state.past],
-        present: [...firstRedo],
-        future: [...restRedo],
-      };
-      undoTrue = redoAction.past.length === 1 ? false : true;
-      redoTrue = !!redoAction.future.length;
-      localStorage.setItem(_STORAGE, JSON.stringify(redoAction));
-      return redoAction;
-
-    default:
-      return state;
-  }
-}
 
 function check(addedTodo, newTodo) {
   for (let i = 0; i < newTodo.length; i++) {
@@ -112,8 +28,6 @@ function check(addedTodo, newTodo) {
   }
   return { id: id(), done: false };
 }
-var undoTrue;
-var redoTrue;
 
 function App() {
   const inputTodos = localStorage.getItem("_STORAGE")
@@ -122,16 +36,52 @@ function App() {
   const [AllTodo, dispatch] = useReducer(reducer, inputTodos);
   const newTodo = [...AllTodo.present];
   const [addNewTodo, setAddNewTodo] = useState(false);
-  const transition = useTransition(addNewTodo, {
-    from: { x: 100, y: 0, opacity: 0 },
-    enter: { x: -20, y: 0, opacity: 1 },
-    leave: { x: -100, y: 0, opacity: 0 },
-  });
-  const scrollElement = useRef();
 
+  const scrollElement = useRef();
+  localStorage.setItem("_STORAGE", JSON.stringify(AllTodo));
+
+  const undoTrue = AllTodo.past.length === 1 ? false : true;
+  const redoTrue = !!AllTodo.future.length;
+
+  //Nav bar animation
   useEffect(() => {
     scrollEffect(scrollElement);
   }, []);
+
+  useEffect(() => {
+    if (addNewTodo) {
+      let tl = gsap.timeline();
+      tl.fromTo(
+        ".actioncenter",
+        0.3,
+        {
+          scale: 0.01,
+          yPercent: 45,
+          xPercent: 40,
+        },
+        { yPercent: 1, xPercent: 1, scale: 1 }
+      );
+    }
+  }, [addNewTodo]);
+
+  //floating add btn animation
+  useEffect(() => {
+    if (!addNewTodo) {
+      let tl = gsap.timeline();
+      tl.to(".createtodo", 1.5, {
+        y: -30,
+        repeat: -1,
+        repeatDelay: 0.5,
+        yoyo: true,
+        ease: "Bounce.easeIn",
+      });
+      // tl.to(".createtodo", 0.5, {
+      //   rotation: 360,
+      //   repeat: -1,
+      //   repeatDelay: 3,
+      // });
+    }
+  });
 
   function addTodoList(addedTodo) {
     dispatch({
@@ -153,11 +103,36 @@ function App() {
     });
   }
 
-  function hideActionCenter() {
+  async function hideActionCenter() {
+    await gsap.fromTo(
+      ".actioncenter",
+      0.3,
+      {
+        scale: 1,
+      },
+      { scale: 0.01, yPercent: 45, xPercent: 40 }
+    );
     setAddNewTodo(!addNewTodo);
   }
 
-  function removeTodo(id) {
+  async function removeTodo(e, id) {
+    const parentRemoved =
+      e.target.parentElement.parentElement.parentElement.parentElement;
+
+    //Animation for individual todo when removed
+    await gsap.fromTo(
+      parentRemoved,
+      0.2,
+      {
+        x: 0,
+        opacity: 1,
+      },
+      {
+        x: 1000,
+        opacity: 0,
+      }
+    );
+
     dispatch({
       type: REMOVE_TODO,
       payload: {
@@ -165,8 +140,31 @@ function App() {
       },
     });
   }
-  function removeAllTodo() {
+
+  //Todo removed animation
+  function animateTodoRemove() {
+    const tl = gsap.timeline();
+    tl.fromTo(
+      ".aniContainer",
+      0.1,
+      {
+        x: 0,
+        stagger: 0.05,
+        opacity: 1,
+      },
+      {
+        x: 500,
+        stagger: 0.05,
+        opacity: 0,
+      }
+    );
+
+    return tl;
+  }
+
+  async function removeAllTodo() {
     if (!!newTodo.length) {
+      await animateTodoRemove();
       dispatch({
         type: REMOVE_ALL_TODO,
       });
@@ -178,6 +176,7 @@ function App() {
   function redoTodoAction() {
     dispatch({ type: REDO });
   }
+
   return (
     <motion.div
       initial={{ width: 0 }}
@@ -209,39 +208,30 @@ function App() {
         {addNewTodo ? (
           <>
             <div className="todomodal"></div>
-            {transition(
-              (style, item) =>
-                item && (
-                  <animated.div style={style} className="actioncenter">
-                    <div className="hideactioncenter-container">
-                      {" "}
-                      <button
-                        className="hideactioncenter"
-                        onClick={hideActionCenter}
-                      >
-                        X
-                      </button>
-                    </div>
-                    <Input
-                      addTodoList={addTodoList}
-                      removeAllTodo={removeAllTodo}
-                    />
-                    <button className="removeAllTodo" onClick={removeAllTodo}>
-                      Remove All Todos
-                    </button>
-                  </animated.div>
-                )
+            {addNewTodo && (
+              <div className="actioncenter">
+                <div className="hideactioncenter-container">
+                  {" "}
+                  <button
+                    className="hideactioncenter"
+                    onClick={hideActionCenter}
+                  >
+                    X
+                  </button>
+                </div>
+                <Input
+                  addTodoList={addTodoList}
+                  removeAllTodo={removeAllTodo}
+                />
+                <button className="removeAllTodo" onClick={removeAllTodo}>
+                  Remove All Todos
+                </button>
+              </div>
             )}
           </>
         ) : (
           <div className="createtodo">
-            <button
-              onClick={() => {
-                setAddNewTodo(!addNewTodo);
-              }}
-            >
-              +
-            </button>
+            <button onClick={() => setAddNewTodo(!addNewTodo)}>+</button>
           </div>
         )}
       </section>
