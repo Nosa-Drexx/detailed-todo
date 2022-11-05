@@ -2,8 +2,11 @@ import id from "../id";
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { gsap } from "gsap";
+import TodoList from "../initialTodoList";
 
-var elemArr = JSON.parse(localStorage.getItem("_STORAGE")).present.length;
+var elemArr = localStorage.getItem("_STORAGE")
+  ? JSON.parse(localStorage.getItem("_STORAGE")).present.length
+  : TodoList.present.length;
 
 function MakeTodo({ todos, toggle, removeTodo }) {
   const allElem = useRef(null);

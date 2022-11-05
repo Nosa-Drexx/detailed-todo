@@ -81,7 +81,7 @@ function App() {
       //   repeatDelay: 3,
       // });
     }
-  });
+  }, [addNewTodo]);
 
   function addTodoList(addedTodo) {
     dispatch({
